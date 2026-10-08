@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 class RecommendationService:
-    """Ranks non-cart products by the categories represented in a user's cart."""
+    """Finds non-cart products that share categories with a user's cart."""
 
     def __init__(
         self,
@@ -25,7 +25,7 @@ class RecommendationService:
         self.client_factory = client_factory
 
     async def get_recommendations(self, user_id: str) -> list[Product]:
-        """Return up to five non-cart products ranked by shared cart categories."""
+        """Return up to five non-cart products with a matching cart category."""
         async with self.client_factory() as client:
             cart_response = await client.get(f"{self.cart_url}/cart/{user_id}")
             cart_response.raise_for_status()
@@ -41,7 +41,12 @@ class RecommendationService:
             for category in product.categories
         }
 
-        candidates = [product for product in products if product.product_id not in cart_product_ids]
+        candidates = [
+            product
+            for product in products
+            if product.product_id not in cart_product_ids
+            and cart_categories.intersection(product.categories)
+        ]
         ranked = sorted(
             candidates,
             key=lambda product: (len(cart_categories.intersection(product.categories)), product.name),

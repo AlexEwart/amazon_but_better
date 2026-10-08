@@ -59,4 +59,31 @@ gcloud builds submit \
   --config=cloudbuild.yaml \
   --substitutions=_ARTIFACT_REGISTRY_REPO="$REPOSITORY",_BUCKET_NAME="$BUCKET",SHORT_SHA="$TAG" \
   .
+
+gcloud run deploy cart \
+  --image "$REGION-docker.pkg.dev/$PROJECTID/$REPOSITORY/cart:$TAG" \
+  --region "$REGION" \
+  --port 8001 \
+  --allow-unauthenticated
+
+gcloud run deploy catalog \
+  --image "$REGION-docker.pkg.dev/$PROJECTID/$REPOSITORY/catalog:$TAG" \
+  --region "$REGION" \
+  --port 8002 \
+  --allow-unauthenticated
+
+export CART_URL="$(gcloud run services describe cart --region="$REGION" --format='value(status.url)')"
+export CATALOG_URL="$(gcloud run services describe catalog --region="$REGION" --format='value(status.url)')"
+
+export CART_URL=http://34.121.75.149:8080
+
+
+
+gcloud run deploy recommendation \
+  --image "$REGION-docker.pkg.dev/$PROJECTID/$REPOSITORY/recommendation:$TAG" \
+  --region "$REGION" \
+  --port 8000 \
+  --allow-unauthenticated \
+  --set-env-vars CART_SERVICE_URL="$CART_URL",CATALOG_SERVICE_URL="$CATALOG_URL"
+
 ```

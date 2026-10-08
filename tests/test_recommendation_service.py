@@ -36,13 +36,16 @@ async def test_recommendations_exclude_cart_items_and_rank_shared_categories():
 @pytest.mark.asyncio
 async def test_recommendations_return_no_more_than_five_products():
     products = [
-        {"product_id": f"product-{number}", "name": f"Product {number}", "description": "Catalog item", "price_usd": 10.0, "categories": ["electronics"]}
-        for number in range(8)
+        {"product_id": "cart-product", "name": "Cart Product", "description": "Cart item", "price_usd": 10.0, "categories": ["electronics"]},
+        *[
+            {"product_id": f"product-{number}", "name": f"Product {number}", "description": "Catalog item", "price_usd": 10.0, "categories": ["electronics"]}
+            for number in range(8)
+        ],
     ]
 
     def handler(request: httpx.Request) -> httpx.Response:
         if request.url.path == "/cart/student":
-            return httpx.Response(200, json={"items": []})
+            return httpx.Response(200, json={"items": ["cart-product"]})
         if request.url.path == "/products":
             return httpx.Response(200, json=products)
         return httpx.Response(404)
@@ -54,3 +57,29 @@ async def test_recommendations_return_no_more_than_five_products():
     )
 
     assert len(await service.get_recommendations("student")) == 5
+
+
+@pytest.mark.asyncio
+async def test_recommendations_exclude_products_without_a_matching_category():
+    products = [
+        {"product_id": "cart-product", "name": "Headphones", "description": "Cart item", "price_usd": 50.0, "categories": ["electronics"]},
+        {"product_id": "matching-product", "name": "Cable", "description": "Matches", "price_usd": 10.0, "categories": ["electronics", "accessories"]},
+        {"product_id": "unrelated-product", "name": "Mug", "description": "Does not match", "price_usd": 12.0, "categories": ["kitchen"]},
+    ]
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.url.path == "/cart/student":
+            return httpx.Response(200, json={"items": ["cart-product"]})
+        if request.url.path == "/products":
+            return httpx.Response(200, json=products)
+        return httpx.Response(404)
+
+    service = RecommendationService(
+        cart_url="http://cart.test",
+        catalog_url="http://catalog.test",
+        client_factory=lambda: httpx.AsyncClient(transport=httpx.MockTransport(handler)),
+    )
+
+    recommendations = await service.get_recommendations("student")
+
+    assert [product.product_id for product in recommendations] == ["matching-product"]
