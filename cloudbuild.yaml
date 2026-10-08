@@ -5,6 +5,10 @@ serviceAccount: projects/ewart-microservices/serviceAccounts/ewart-service-accou
 options:
   logging: CLOUD_LOGGING_ONLY
 
+substitutions:
+  _ARTIFACT_REGISTRY_REPO: ewart-microservices-repo
+  _BUCKET_NAME: ewart-microservices_cloudbuild
+
 steps:
   # A failing test stops the build before any image is pushed.
   - name: 'python:3.12'
