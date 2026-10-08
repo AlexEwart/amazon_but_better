@@ -1,0 +1,2 @@
+# Google Cloud service-account credentials must not be committed.
+*-service-account-key.json

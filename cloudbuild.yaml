@@ -1,5 +1,10 @@
 # Project-level Cloud Build entrypoint for all three services.
 # Submit this file from the amazon_but_better directory.
+serviceAccount: projects/ewart-microservices/serviceAccounts/ewart-service-account@ewart-microservices.iam.gserviceaccount.com
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
 steps:
   # A failing test stops the build before any image is pushed.
   - name: 'python:3.12'

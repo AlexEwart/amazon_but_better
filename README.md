@@ -30,3 +30,33 @@ GitHub Actions runs these tests and builds all three Docker images for every pus
 ## Deploy to Google Cloud Run
 
 Cloud Run needs each service deployed separately. Deploy Cart and Catalog first, copy their service URLs, then deploy Recommendation with `CART_SERVICE_URL` and `CATALOG_SERVICE_URL` set to those URLs. The user-facing deployment commands are included in the handoff message from Codex.
+
+
+## Submit the Cloud Build pipeline
+
+From any directory inside this Git repository, first change to the repository root and define the build variables:
+
+```bash
+cd "$(git rev-parse --show-toplevel)"
+
+export REPOSITORY=ewart-microservices-repo
+export PROJECTID=ewart-microservices
+export REGION=us-central1
+export BUCKET=ewart-microservices_cloudbuild
+export TAG="$(git rev-parse --short HEAD)"
+export GOOGLE_APPLICATION_CREDENTIALS="$PWD/ewart-service-account-key.json"
+```
+
+`$PWD` makes the key path absolute. This works whether the command was started from the repository root or from `recommendation/`.
+
+```bash
+gcloud auth activate-service-account \
+  --key-file="$GOOGLE_APPLICATION_CREDENTIALS" \
+  --project="$PROJECTID"
+
+gcloud builds submit \
+  --region="$REGION" \
+  --config=cloudbuild.yaml \
+  --substitutions=_ARTIFACT_REGISTRY_REPO="$REPOSITORY",_BUCKET_NAME="$BUCKET",SHORT_SHA="$TAG" \
+  .
+```
