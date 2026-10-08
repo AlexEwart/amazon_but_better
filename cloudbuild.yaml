@@ -11,7 +11,7 @@ steps:
     entrypoint: 'sh'
     args:
       - '-c'
-      - 'pip install -r requirements.txt && python -m pytest tests --junitxml=${SHORT_SHA}_test_log.xml'
+      - 'pip install -r requirements.txt && PYTHONPATH=. python -m pytest tests --junitxml=${SHORT_SHA}_test_log.xml'
 
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-f', 'cart/Dockerfile', '-t', 'us-central1-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/cart:${SHORT_SHA}', '.']

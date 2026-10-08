@@ -1,2 +1,6 @@
 # Google Cloud service-account credentials must not be committed.
 *-service-account-key.json
+
+# Python creates these automatically when code is imported or tested.
+__pycache__/
+*.py[cod]
