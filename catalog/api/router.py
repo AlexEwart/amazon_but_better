@@ -11,11 +11,11 @@ app = FastAPI(title="Dummy Catalog Service")
 catalog_router = APIRouter(prefix="/products", tags=["catalog"])
 
 
-{"product_id": "101", "name": "Wired Headphones", "description": "Over-ear headphones", "price_usd": 4999.99, "categories": ["electronics", "audio"]}
 
 
 _PRODUCTS = [
     {"product_id": "101", "name": "Wireless Headphones", "description": "Over-ear Bluetooth headphones with a charging case.", "price_usd": 49.99, "categories": ["electronics", "audio"]},
+    {"product_id": "101", "name": "Wired Headphones", "description": "Over-ear headphones", "price_usd": 4999.99, "categories": ["electronics", "audio"]},
     {"product_id": "132", "name": "Hat", "description": "Fancy Smancy Hat", "price_usd": 100000, "categories": ["fashion"]},
     {"product_id": "202", "name": "Travel Mug", "description": "Insulated stainless steel mug for coffee or tea.", "price_usd": 14.50, "categories": ["kitchen", "travel"]},
     {"product_id": "303", "name": "Bluetooth Speaker", "description": "Portable water-resistant speaker for music on the go.", "price_usd": 34.99, "categories": ["electronics", "audio"]},
