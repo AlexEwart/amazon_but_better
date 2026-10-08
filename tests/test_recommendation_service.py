@@ -83,3 +83,25 @@ async def test_recommendations_exclude_products_without_a_matching_category():
     recommendations = await service.get_recommendations("student")
 
     assert [product.product_id for product in recommendations] == ["matching-product"]
+
+
+@pytest.mark.asyncio
+async def test_empty_cart_field_returns_no_recommendations():
+    products = [
+        {"product_id": "product-1", "name": "Speaker", "description": "Catalog item", "price_usd": 10.0, "categories": ["electronics"]},
+    ]
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.url.path == "/cart/student":
+            return httpx.Response(200, json={"user_id": "student", "cart": None})
+        if request.url.path == "/products":
+            return httpx.Response(200, json=products)
+        return httpx.Response(404)
+
+    service = RecommendationService(
+        cart_url="http://cart.test",
+        catalog_url="http://catalog.test",
+        client_factory=lambda: httpx.AsyncClient(transport=httpx.MockTransport(handler)),
+    )
+
+    assert await service.get_recommendations("student") == []

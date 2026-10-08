@@ -32,7 +32,14 @@ class RecommendationService:
             catalog_response = await client.get(f"{self.catalog_url}/products")
             catalog_response.raise_for_status()
 
-        cart_product_ids = set(cart_response.json().get("items", []))
+        cart_payload = cart_response.json()
+        cart_items = cart_payload.get("items", cart_payload.get("cart", [])) or []
+        if isinstance(cart_items, dict):
+            cart_items = cart_items.get("items", [])
+        cart_product_ids = {
+            item.get("product_id", item.get("id")) if isinstance(item, dict) else item
+            for item in cart_items
+        }
         products = [Product.model_validate(product) for product in catalog_response.json()]
         cart_categories = {
             category
