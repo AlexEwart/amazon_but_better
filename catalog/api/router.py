@@ -11,13 +11,13 @@ app = FastAPI(title="Dummy Catalog Service")
 catalog_router = APIRouter(prefix="/products", tags=["catalog"])
 
 _PRODUCTS = [
-    {"product_id": "product-101", "name": "Wireless Headphones", "description": "Over-ear Bluetooth headphones with a charging case.", "price_usd": 49.99, "categories": ["electronics", "audio"]},
-    {"product_id": "product-202", "name": "Travel Mug", "description": "Insulated stainless steel mug for coffee or tea.", "price_usd": 14.50, "categories": ["kitchen", "travel"]},
-    {"product_id": "product-303", "name": "Bluetooth Speaker", "description": "Portable water-resistant speaker for music on the go.", "price_usd": 34.99, "categories": ["electronics", "audio"]},
-    {"product_id": "product-404", "name": "Coffee Grinder", "description": "Compact burr grinder for fresh coffee beans.", "price_usd": 39.99, "categories": ["kitchen", "coffee"]},
-    {"product_id": "product-505", "name": "USB-C Charging Cable", "description": "Durable braided cable for charging compatible devices.", "price_usd": 9.99, "categories": ["electronics", "accessories"]},
-    {"product_id": "product-606", "name": "Laptop Stand", "description": "Adjustable aluminum stand for laptops and tablets.", "price_usd": 27.99, "categories": ["electronics", "office"]},
-    {"product_id": "product-707", "name": "Tea Infuser", "description": "Reusable stainless steel infuser for loose leaf tea.", "price_usd": 7.99, "categories": ["kitchen", "tea"]},
+    {"product_id": "101", "name": "Wireless Headphones", "description": "Over-ear Bluetooth headphones with a charging case.", "price_usd": 49.99, "categories": ["electronics", "audio"]},
+    {"product_id": "202", "name": "Travel Mug", "description": "Insulated stainless steel mug for coffee or tea.", "price_usd": 14.50, "categories": ["kitchen", "travel"]},
+    {"product_id": "303", "name": "Bluetooth Speaker", "description": "Portable water-resistant speaker for music on the go.", "price_usd": 34.99, "categories": ["electronics", "audio"]},
+    {"product_id": "404", "name": "Coffee Grinder", "description": "Compact burr grinder for fresh coffee beans.", "price_usd": 39.99, "categories": ["kitchen", "coffee"]},
+    {"product_id": "505", "name": "USB-C Charging Cable", "description": "Durable braided cable for charging compatible devices.", "price_usd": 9.99, "categories": ["electronics", "accessories"]},
+    {"product_id": "606", "name": "Laptop Stand", "description": "Adjustable aluminum stand for laptops and tablets.", "price_usd": 27.99, "categories": ["electronics", "office"]},
+    {"product_id": "707", "name": "Tea Infuser", "description": "Reusable stainless steel infuser for loose leaf tea.", "price_usd": 7.99, "categories": ["kitchen", "tea"]},
 ]
 
 
