@@ -1,0 +1,25 @@
+services:
+  cart:
+    build:
+      context: .
+      dockerfile: cart/Dockerfile
+    ports:
+      - "8001:8001"
+  catalog:
+    build:
+      context: .
+      dockerfile: catalog/Dockerfile
+    ports:
+      - "8002:8002"
+  recommendation:
+    build:
+      context: .
+      dockerfile: recommendation/Dockerfile
+    environment:
+      CART_SERVICE_URL: http://cart:8001
+      CATALOG_SERVICE_URL: http://catalog:8002
+    ports:
+      - "8000:8000"
+    depends_on:
+      - cart
+      - catalog

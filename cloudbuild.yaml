@@ -1,0 +1,34 @@
+# Project-level Cloud Build entrypoint for all three services.
+# Submit this file from the amazon_but_better directory.
+steps:
+  # A failing test stops the build before any image is pushed.
+  - name: 'python:3.12'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - 'pip install -r requirements.txt && python -m pytest tests --junitxml=${SHORT_SHA}_test_log.xml'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-f', 'cart/Dockerfile', '-t', 'us-central1-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/cart:${SHORT_SHA}', '.']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'us-central1-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/cart:${SHORT_SHA}']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-f', 'catalog/Dockerfile', '-t', 'us-central1-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/catalog:${SHORT_SHA}', '.']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'us-central1-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/catalog:${SHORT_SHA}']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-f', 'recommendation/Dockerfile', '-t', 'us-central1-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/recommendation:${SHORT_SHA}', '.']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'us-central1-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/recommendation:${SHORT_SHA}']
+
+artifacts:
+  objects:
+    location: 'gs://${_BUCKET_NAME}/'
+    paths: ['${SHORT_SHA}_test_log.xml']
+
+images:
+  - 'us-central1-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/cart:${SHORT_SHA}'
+  - 'us-central1-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/catalog:${SHORT_SHA}'
+  - 'us-central1-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/recommendation:${SHORT_SHA}'
