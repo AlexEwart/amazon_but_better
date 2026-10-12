@@ -5,6 +5,6 @@ class Product(BaseModel):
     product_id: str
     name: str
     description: str
-    price_usd: float
+    price: float
     categories: list[str]
 

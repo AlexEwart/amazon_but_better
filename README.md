@@ -86,4 +86,12 @@ gcloud run deploy recommendation \
   --allow-unauthenticated \
   --set-env-vars CART_SERVICE_URL="$CART_URL",CATALOG_SERVICE_URL="$CATALOG_URL"
 
+
+gcloud run services logs read recommendation --region us-central1 --limit 100
+gcloud beta run services logs tail recommendation --region us-central1
+
+gcloud auth login
+gcloud auth list
+gcloud config set account YOUR_GOOGLE_EMAIL
+gcloud config set project YOUR_CLOUD_RUN_PROJECT_ID
 ```
