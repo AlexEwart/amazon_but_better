@@ -1,14 +1,39 @@
 """Dummy Catalog service used by the Recommendation service during development."""
 
 import logging
+import asyncio
+from uuid import UUID, uuid4
 
-from fastapi import APIRouter, FastAPI, HTTPException, Query
+from fastapi import APIRouter, FastAPI, HTTPException, Query, Request
+
+from request_logging import log_request
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = FastAPI(title="Dummy Catalog Service")
 catalog_router = APIRouter(prefix="/products", tags=["catalog"])
+
+
+@app.middleware("http")
+async def log_catalog_request(request: Request, call_next):
+    incoming_id = request.headers.get("correlation_id", "")
+    try:
+        correlation_id = str(UUID(incoming_id))
+    except ValueError:
+        correlation_id = str(uuid4())
+
+    response = await call_next(request)
+    response.headers["correlation_id"] = correlation_id
+    await asyncio.to_thread(
+        log_request,
+        user_id=None,
+        cart=None,
+        endpoint=request.url.path,
+        method=request.method,
+        correlation_id=correlation_id,
+    )
+    return response
 
 
 

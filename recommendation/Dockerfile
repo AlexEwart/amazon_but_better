@@ -4,6 +4,7 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY recommendation /app/recommendation
+COPY request_logging.py /app/request_logging.py
 
 EXPOSE 8000
 CMD ["uvicorn", "recommendation.api.router:app", "--host", "0.0.0.0", "--port", "8000"]

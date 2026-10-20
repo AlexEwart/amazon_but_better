@@ -3,6 +3,7 @@
 import logging
 import os
 from collections.abc import Callable
+from typing import Any
 
 import httpx
 
@@ -24,15 +25,24 @@ class RecommendationService:
         self.catalog_url = catalog_url or os.getenv("CATALOG_SERVICE_URL", "http://localhost:8002")
         self.client_factory = client_factory
 
-    async def get_recommendations(self, user_id: str) -> list[Product]:
+    async def get_recommendations(
+        self,
+        user_id: str,
+        correlation_id: str | None = None,
+        request_context: dict[str, Any] | None = None,
+    ) -> list[Product]:
         """Return up to five non-cart products with a matching cart category."""
+        headers = {"correlation_id": correlation_id} if correlation_id else {}
         async with self.client_factory() as client:
-            cart_response = await client.get(f"{self.cart_url}/cart/{user_id}")
+            cart_response = await client.get(f"{self.cart_url}/cart/{user_id}", headers=headers)
             cart_response.raise_for_status()
-            catalog_response = await client.get(f"{self.catalog_url}/products")
+            cart_data = cart_response.json()
+            if request_context is not None:
+                request_context["cart"] = cart_data.get("cart", []) if isinstance(cart_data, dict) else cart_data
+            catalog_response = await client.get(f"{self.catalog_url}/products", headers=headers)
             catalog_response.raise_for_status()
 
-        cart_items = cart_response.json().get("cart") or []
+        cart_items = cart_data.get("cart") or [] if isinstance(cart_data, dict) else cart_data or []
         cart_product_ids = {item["product_id"] for item in cart_items}
         products = [Product.model_validate(product) for product in catalog_response.json()]
         cart_categories = {
