@@ -60,11 +60,11 @@ gcloud builds submit \
   --substitutions=_ARTIFACT_REGISTRY_REPO="$REPOSITORY",_BUCKET_NAME="$BUCKET",SHORT_SHA="$TAG" \
   .
 
-gcloud run deploy cart \
-  --image "$REGION-docker.pkg.dev/$PROJECTID/$REPOSITORY/cart:$TAG" \
-  --region "$REGION" \
-  --port 8001 \
-  --allow-unauthenticated
+# gcloud run deploy cart \
+#   --image "$REGION-docker.pkg.dev/$PROJECTID/$REPOSITORY/cart:$TAG" \
+#   --region "$REGION" \
+#   --port 8001 \
+#   --allow-unauthenticated
 
 gcloud run deploy catalog \
   --image "$REGION-docker.pkg.dev/$PROJECTID/$REPOSITORY/catalog:$TAG" \
@@ -72,7 +72,7 @@ gcloud run deploy catalog \
   --port 8002 \
   --allow-unauthenticated
 
-export CART_URL="$(gcloud run services describe cart --region="$REGION" --format='value(status.url)')"
+# export CART_URL="$(gcloud run services describe cart --region="$REGION" --format='value(status.url)')"
 export CATALOG_URL="$(gcloud run services describe catalog --region="$REGION" --format='value(status.url)')"
 
 export CART_URL=http://34.121.75.149:8080

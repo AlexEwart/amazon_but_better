@@ -32,7 +32,7 @@ class RecommendationService:
         request_context: dict[str, Any] | None = None,
     ) -> list[Product]:
         """Return up to five non-cart products with a matching cart category."""
-        headers = {"correlation_id": correlation_id} if correlation_id else {}
+        headers = {"correlation-id": correlation_id} if correlation_id else {}
         async with self.client_factory() as client:
             cart_response = await client.get(f"{self.cart_url}/cart/{user_id}", headers=headers)
             cart_response.raise_for_status()

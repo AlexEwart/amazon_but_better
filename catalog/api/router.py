@@ -17,14 +17,14 @@ catalog_router = APIRouter(prefix="/products", tags=["catalog"])
 
 @app.middleware("http")
 async def log_catalog_request(request: Request, call_next):
-    incoming_id = request.headers.get("correlation_id", "")
+    incoming_id = request.headers.get("correlation-id", "")
     try:
         correlation_id = str(UUID(incoming_id))
     except ValueError:
         correlation_id = str(uuid4())
 
     response = await call_next(request)
-    response.headers["correlation_id"] = correlation_id
+    response.headers["correlation-id"] = correlation_id
     await asyncio.to_thread(
         log_request,
         user_id=None,
